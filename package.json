@@ -1,0 +1,31 @@
+{
+  "name": "anna-mini-notes",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "dev": "anna-app dev --no-llm",
+    "validate": "anna-app validate --strict",
+    "test": "vitest run --environment jsdom",
+    "test:executa": "node scripts/test-executa.mjs",
+    "executa:mock": "node scripts/run-executa-mock.mjs",
+    "package:executa": "powershell -ExecutionPolicy Bypass -File scripts/package-executa.ps1"
+  },
+  "dependencies": {
+    "@anna-ai/app-runtime": "0.15.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@anna-ai/cli": "0.1.46",
+    "@testing-library/react": "16.3.0",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "@vitejs/plugin-react": "5.0.0",
+    "jsdom": "26.1.0",
+    "typescript": "5.9.2",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  }
+}

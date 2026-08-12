@@ -1,0 +1,4 @@
+# Offline sampling fixture for `anna-app executa dev --mock-sampling`.
+# The CLI records the received sampling/createMessage frame in its protocol trace.
+{"ns":"sampling","method":"createMessage","match":{"contentIncludes":"请总结下面按添加顺序排列的笔记"},"result":{"role":"assistant","content":{"type":"text","text":"需要跟进客户、修复登录问题，并整理 Workshop 内容想法；建议先处理客户沟通和登录 bug，再集中完善 Workshop 方案。"},"model":"mock-anna-model","stopReason":"endTurn","usage":{"inputTokens":64,"outputTokens":31}}}
+

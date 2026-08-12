@@ -1,0 +1,123 @@
+name: Release Executa binaries
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (for example v1.0.0)"
+        required: true
+        default: "v1.0.0"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            platform: darwin-arm64
+            rust_target: aarch64-apple-darwin
+            executable: mini-notes-summarizer
+            archive: mini-notes-summarizer-darwin-arm64.tar.gz
+          - os: macos-14
+            platform: darwin-x86_64
+            rust_target: x86_64-apple-darwin
+            executable: mini-notes-summarizer
+            archive: mini-notes-summarizer-darwin-x86_64.tar.gz
+          - os: windows-latest
+            platform: windows-x86_64
+            rust_target: x86_64-pc-windows-msvc
+            executable: mini-notes-summarizer.exe
+            archive: mini-notes-summarizer-windows-x86_64.zip
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_target }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build release binary
+        run: >-
+          cargo build --release
+          --manifest-path executas/mini-notes-summarizer/Cargo.toml
+          --target ${{ matrix.rust_target }}
+
+      - name: Protocol smoke test (initialize, describe, invoke + reverse sampling)
+        env:
+          EXECUTA_BIN: ${{ github.workspace }}/executas/mini-notes-summarizer/target/${{ matrix.rust_target }}/release/${{ matrix.executable }}
+        run: node scripts/test-executa.mjs
+
+      - name: Stage archive layout
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          RUST_TARGET: ${{ matrix.rust_target }}
+          EXECUTABLE: ${{ matrix.executable }}
+        run: |
+          mkdir -p "dist/stage-$PLATFORM/bin"
+          cp "executas/mini-notes-summarizer/target/$RUST_TARGET/release/$EXECUTABLE" "dist/stage-$PLATFORM/bin/$EXECUTABLE"
+          if [[ "$PLATFORM" == darwin-* ]]; then chmod 755 "dist/stage-$PLATFORM/bin/$EXECUTABLE"; fi
+          node scripts/write-archive-manifest.mjs "$PLATFORM" "dist/stage-$PLATFORM/manifest.json"
+
+      - name: Package macOS archive
+        if: startsWith(matrix.platform, 'darwin-')
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          ARCHIVE: ${{ matrix.archive }}
+        run: tar -C "dist/stage-$PLATFORM" -czf "dist/$ARCHIVE" manifest.json bin/mini-notes-summarizer
+
+      - name: Package Windows archive
+        if: matrix.platform == 'windows-x86_64'
+        shell: pwsh
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          ARCHIVE: ${{ matrix.archive }}
+        run: Compress-Archive -Path "dist/stage-$env:PLATFORM/*" -DestinationPath "dist/$env:ARCHIVE"
+
+      - name: Verify archive members
+        env:
+          ARCHIVE: ${{ matrix.archive }}
+          EXECUTABLE: ${{ matrix.executable }}
+        run: |
+          members="$(tar -tf "dist/$ARCHIVE")"
+          printf '%s\n' "$members"
+          printf '%s\n' "$members" | grep -Eq '(^|/)manifest.json$'
+          printf '%s\n' "$members" | grep -Eq "(^|/)bin/$EXECUTABLE$"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: dist/${{ matrix.archive }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Assert all three release assets exist
+        run: |
+          test -f release-assets/mini-notes-summarizer-darwin-arm64.tar.gz
+          test -f release-assets/mini-notes-summarizer-darwin-x86_64.tar.gz
+          test -f release-assets/mini-notes-summarizer-windows-x86_64.zip
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          generate_release_notes: true
+          files: release-assets/*
+

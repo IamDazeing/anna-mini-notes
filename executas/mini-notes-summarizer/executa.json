@@ -1,0 +1,34 @@
+{
+  "slug": "mini-notes-summarizer",
+  "name": "Mini Notes Summarizer",
+  "version": "1.0.0",
+  "executa_type": "tool",
+  "description": "Summarizes Anna Mini Notes by issuing reverse sampling/createMessage to the host LLM.",
+  "tool_id": "tool-test-mini-notes-summarizer-12345678",
+  "type": "binary",
+  "command": ["cargo", "run", "--quiet", "--manifest-path", "Cargo.toml"],
+  "enabled": true,
+  "distribution": {
+    "type": "binary",
+    "executable_name": "mini-notes-summarizer",
+    "supports_protocol": true,
+    "binary_urls": {
+      "darwin-arm64": {
+        "url": "https://github.com/OWNER/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-darwin-arm64.tar.gz",
+        "entrypoint": "bin/mini-notes-summarizer",
+        "format": "tar.gz"
+      },
+      "darwin-x86_64": {
+        "url": "https://github.com/OWNER/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-darwin-x86_64.tar.gz",
+        "entrypoint": "bin/mini-notes-summarizer",
+        "format": "tar.gz"
+      },
+      "windows-x86_64": {
+        "url": "https://github.com/OWNER/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-windows-x86_64.zip",
+        "entrypoint": "bin/mini-notes-summarizer.exe",
+        "format": "zip"
+      }
+    }
+  }
+}
+

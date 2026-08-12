@@ -1,0 +1,19 @@
+[package]
+name = "mini-notes-summarizer"
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+description = "Anna Executa that summarizes notes through reverse sampling/createMessage"
+
+[[bin]]
+name = "mini-notes-summarizer"
+path = "src/main.rs"
+
+[dependencies]
+serde_json = "1.0"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+
