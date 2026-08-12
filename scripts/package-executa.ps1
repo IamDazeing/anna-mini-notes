@@ -21,6 +21,14 @@ if ($LASTEXITCODE -ne 0) { throw "cargo build failed" }
 
 $Stage = Join-Path $DistRoot "stage-$Platform"
 $BinDir = Join-Path $Stage "bin"
+if (Test-Path -LiteralPath $Stage) {
+  $ResolvedStage = (Resolve-Path -LiteralPath $Stage).Path
+  $ResolvedDist = (Resolve-Path -LiteralPath $DistRoot).Path
+  if (-not $ResolvedStage.StartsWith($ResolvedDist + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Refusing to clean stage outside dist: $ResolvedStage"
+  }
+  Remove-Item -LiteralPath $ResolvedStage -Recurse -Force
+}
 New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $ExecutaRoot "target\release\$ToolName.exe") -Destination (Join-Path $BinDir "$ToolName.exe") -Force
 
@@ -28,8 +36,8 @@ $ArchiveManifest = @{
   name = "tool-test-mini-notes-summarizer-12345678"
   version = "1.0.0"
   runtime = @{ binary = @{
-    entrypoint = @{ default = "bin/$ToolName"; "windows-x86_64" = "bin/$ToolName.exe" }
-    permissions = @{ "bin/$ToolName" = "0o755"; "bin/$ToolName.exe" = "0o755" }
+    entrypoint = "bin/$ToolName.exe"
+    permissions = @{ "bin/$ToolName.exe" = "0o755" }
   }}
 } | ConvertTo-Json -Depth 8
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)

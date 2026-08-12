@@ -20,12 +20,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
+          - os: macos-15
             platform: darwin-arm64
             rust_target: aarch64-apple-darwin
             executable: mini-notes-summarizer
             archive: mini-notes-summarizer-darwin-arm64.tar.gz
-          - os: macos-14
+          - os: macos-15-intel
             platform: darwin-x86_64
             rust_target: x86_64-apple-darwin
             executable: mini-notes-summarizer
@@ -47,6 +47,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Validate release tag and platform metadata
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+          PLATFORM: ${{ matrix.platform }}
+          ARCHIVE: ${{ matrix.archive }}
+        run: node scripts/verify-release-metadata.mjs "$RELEASE_TAG" "$PLATFORM" "$ARCHIVE"
 
       - name: Build release binary
         run: >-
@@ -120,4 +127,3 @@ jobs:
           tag_name: ${{ github.event.inputs.tag || github.ref_name }}
           generate_release_notes: true
           files: release-assets/*
-
