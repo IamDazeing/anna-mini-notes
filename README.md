@@ -202,7 +202,6 @@ Workflow artifacts 仅是 job 间传输，不能替代 Release assets。
 
 - 本地 UI harness 的 legacy storage 不保证外层 dashboard 刷新或 dev 重启后的持久性。
 - `--no-llm` 下 Summarize 失败是专门保留的验收行为；成功 mock sampling 在 `executa dev` 中验证。
-- `executa.json` 的 GitHub URL 含 `OWNER` 占位符；首次发布仓库后应替换为实际 owner，或在 Anna 发布生命周期中使用实际 release asset URL。
 
 ## License
 

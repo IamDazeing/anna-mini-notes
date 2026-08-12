@@ -14,21 +14,20 @@
     "supports_protocol": true,
     "binary_urls": {
       "darwin-arm64": {
-        "url": "https://github.com/OWNER/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-darwin-arm64.tar.gz",
+        "url": "https://github.com/IamDazeing/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-darwin-arm64.tar.gz",
         "entrypoint": "bin/mini-notes-summarizer",
         "format": "tar.gz"
       },
       "darwin-x86_64": {
-        "url": "https://github.com/OWNER/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-darwin-x86_64.tar.gz",
+        "url": "https://github.com/IamDazeing/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-darwin-x86_64.tar.gz",
         "entrypoint": "bin/mini-notes-summarizer",
         "format": "tar.gz"
       },
       "windows-x86_64": {
-        "url": "https://github.com/OWNER/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-windows-x86_64.zip",
+        "url": "https://github.com/IamDazeing/anna-mini-notes/releases/download/v1.0.0/mini-notes-summarizer-windows-x86_64.zip",
         "entrypoint": "bin/mini-notes-summarizer.exe",
         "format": "zip"
       }
     }
   }
 }
-
