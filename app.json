@@ -1,7 +1,12 @@
 {
+  "slug": "anna-mini-notes",
   "name": "Mini Notes with LLM Summary",
   "tagline": "Anna-native notes with summaries produced through Executa sampling.",
   "description": "Create and delete small notes in Anna storage, then summarize the current list through a bundled Executa that borrows the host LLM using reverse sampling/createMessage.",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "bundled_executas": {
+    "mini-notes-summarizer": {
+      "path": "./executas/mini-notes-summarizer"
+    }
+  }
 }
-
